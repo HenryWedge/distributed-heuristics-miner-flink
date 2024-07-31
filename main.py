@@ -2,11 +2,16 @@ import pm4py
 from pm4py.algo.discovery.heuristics.variants import classic as heu_algorithm
 from pm4py.objects.heuristics_net.obj import HeuristicsNet
 
+from mining.petri_net_creator import convert_to_petri_net, test_cliques
+
+
 def import_xes(file_path):
+    test_cliques()
     event_log = pm4py.read_xes(file_path)
     start_activities = pm4py.get_start_activities(event_log)
     end_activities = pm4py.get_end_activities(event_log)
-    #heuristics_net = pm4py.discover_heuristics_net(event_log)
+    heuristics_net = pm4py.discover_heuristics_net(event_log)
+    petrinet = convert_to_petri_net(heuristics_net)
 
     print("Start activities: {}\nEnd activities: {}".format(start_activities, end_activities))
     #pm4py.view_petri_net(petri_net[0])
@@ -28,10 +33,9 @@ def import_xes(file_path):
     dfg[('reinitiate request', 'examine casually')] = 1
     dfg[('reinitiate request', 'examine thoroughly')] = 1
 
-    heuristics_net = heu_algorithm.apply_heu_dfg(
-        dfg=dfg)
+    heuristics_net = heu_algorithm.apply_heu_dfg(dfg=dfg)
 
-    petri_net, initial_marking, final_marking = pm4py.convert_to_petri_net(dfg, 'reinitiate request', 'examine thoroughly')
+    petri_net, initial_marking, final_marking = pm4py.convert_to_petri_net(heuristics_net)
 
     precision_token_based_replay = pm4py.precision_token_based_replay(event_log, petri_net, initial_marking, final_marking)
     precision_alignment = pm4py.precision_alignments(event_log, petri_net, initial_marking, final_marking)
