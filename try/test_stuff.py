@@ -43,6 +43,7 @@ def import_xes(file_path):
     fitness_alignment = pm4py.fitness_alignments(event_log, petri_net, initial_marking, final_marking)
     #fitness_footprints = pm4py.fitness_footprints(event_log, petri_net, initial_marking, final_marking)
 
+    pm4py.convert_to_petri_net()
     print("Precision Token Based Replay: " + str(precision_token_based_replay))
     print("Precision Alignment: " + str(precision_alignment))
     #print("Precision Footprint: " + str(precision_footprints))

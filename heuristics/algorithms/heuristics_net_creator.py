@@ -11,43 +11,60 @@ class HeuristicsNetCreator:
         self.dependency_threshold = dependency_threshold
         self.and_threshold = and_threshold
 
+    def _get_predecessor(self, relation):
+        return relation[0]
+
+    def _get_successor(self, relation):
+        return relation[1]
+
     def create_heuristics_net(self, directly_follows_graph: DirectlyFollowsGraph) -> HeuristicsResult:
         all_activities = []
-        causal_activities = []
         concurrent_activities = []
         self.relations = directly_follows_graph.relations
 
-        for relation1 in self.relations:
-            if not relation1[0] in all_activities:
-                all_activities.append(relation1[0])
+        relevant_relations: Set[tuple[string, string]] = set()
+        for relation in self.relations:
+            if self.get_dependency_measure(self._get_predecessor(relation), self._get_successor(relation)) > self.dependency_threshold:
+                relevant_relations.add(relation)
+
+        for relation1 in relevant_relations:
+            predecessor_relation1 = self._get_predecessor(relation1)
+            successor_relation1 = self._get_successor(relation1)
+
+            if predecessor_relation1 not in all_activities:
+                all_activities.append(predecessor_relation1)
 
             if not relation1[1] in all_activities:
-                all_activities.append(relation1[1])
+                all_activities.append(successor_relation1)
 
             for relation2 in self.relations:
-                if not relation1 == relation2 and relation1[0] == relation2[0]:
-                    and_measure = self.get_and_measure(
-                        relation1[0],
-                        relation2[1],
-                        relation1[1]
-                    )
-                    if and_measure > self.and_threshold:
-                        concurrent_activities.append(
-                            (relation1[1], relation2[1])
+                predecessor_relation2 = self._get_predecessor(relation2)
+                successor_relation2 = self._get_successor(relation2)
+
+                if not relation1 == relation2:
+                    if predecessor_relation1 == predecessor_relation2:
+                        and_measure = self.get_and_measure(
+                            predecessor_relation1,
+                            successor_relation1,
+                            successor_relation2
                         )
-                    else:
-                        causal_activities.append(
-                            (relation1[1], relation2[1])
+                        if and_measure > self.and_threshold:
+                            concurrent_activities.append((successor_relation1, successor_relation2))
+
+                    if successor_relation1 == successor_relation2:
+                        and_measure = self.get_and_measure(
+                            successor_relation1,
+                            predecessor_relation1,
+                            predecessor_relation2
                         )
-        relations_as_list: Set[tuple[string, string]] = set()
-        for relation in self.relations:
-            relations_as_list.add(relation)
+                        if and_measure > self.and_threshold:
+                            concurrent_activities.append((predecessor_relation1, predecessor_relation2))
 
         return HeuristicsResult(
             all_activities=all_activities,
             start_activities=directly_follows_graph.start_activities,
             end_activities=directly_follows_graph.end_activities,
-            relations=list(relations_as_list),
+            relations=list(relevant_relations),
             concurrent_activities=concurrent_activities
         )
 
@@ -63,3 +80,7 @@ class HeuristicsNetCreator:
         cb = self.get_count((c, b))
         return (bc + cb) / (ab + ac + 1)
 
+    def get_dependency_measure(self, a, b):
+        ab = self.get_count((a, b))
+        ba = self.get_count((b, a))
+        return ab / (ab + ba + 1)

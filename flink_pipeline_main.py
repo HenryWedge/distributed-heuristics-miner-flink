@@ -19,5 +19,3 @@ if __name__ == '__main__':
         connect_jar_location=os.environ["path_to_connect_jar"] + "resources/flink-sql-connector-kafka-1.17.2.jar"
     )
     miner.run()
-
-

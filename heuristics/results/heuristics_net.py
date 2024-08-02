@@ -24,3 +24,18 @@ class HeuristicsResult:
             if concurrent in successors_of_activities:
                 concurrent_successors.append(concurrent)
         return concurrent_successors
+
+    def get_predecessors_of(self, activity):
+        successors = []
+        for relation in self.relations:
+            if relation[1] == activity:
+                successors.append(relation[0])
+        return successors
+
+    def get_concurrent_predecessors_of(self, activity):
+        predecessors_of_activities = self.get_predecessors_of(activity)
+        concurrent_predecessors = []
+        for concurrent in self.concurrent_activities:
+            if concurrent in predecessors_of_activities:
+                concurrent_predecessors.append(concurrent)
+        return concurrent_predecessors
