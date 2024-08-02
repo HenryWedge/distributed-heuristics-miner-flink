@@ -1,3 +1,7 @@
 pm4py~=2.7.11.10
 pandas~=2.2.2
 Flask~=3.0.3
+apache-flink~=1.17.2
+apache-flink-libraries~=1.17.2
+kafka-python~=2.0.2
+flask-classful~=0.16.0

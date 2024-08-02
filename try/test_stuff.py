@@ -55,4 +55,4 @@ def import_xes(file_path):
 
 
 if __name__ == "__main__":
-    import_xes("/home/hre/Repo/stream-process-mining/resources/running-example.xes")
+    import_xes("/resources/running-example.xes")
