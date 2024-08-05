@@ -6,7 +6,7 @@ from pm4py.objects.petri_net.utils.petri_utils import add_arc_from_to
 
 
 def create_empty_petri_net():
-    return SerializablePetriNet(set(), set(), set(), set(),[], [])
+    return SerializablePetriNet(set(), set(), set(), set(), set(), set())
 
 
 class SerializablePetriNet:
@@ -19,26 +19,25 @@ class SerializablePetriNet:
             arc_transition_place,
             start_activities,
             end_activities):
-        self.places: Set[string] = places
-        self.transitions: Set[string] = transitions
+        self.places: Set[string] = set(places)
+        self.transitions: Set[string] = set(transitions)
         self.silent_transitions: Set[string] = transitions
-        self.arc_place_transition: Set[tuple[string, string]] = arc_place_transition
-        self.arc_transition_place: Set[tuple[string, string]] = arc_transition_place
-        self.start_activities = start_activities
-        self.end_activities = end_activities
+        self.arc_place_transition: Set[tuple[string, string]] = set(arc_place_transition)
+        self.arc_transition_place: Set[tuple[string, string]] = set(arc_transition_place)
+        self.start_activities = set(start_activities)
+        self.end_activities = set(end_activities)
 
     def add_start_activity(self, start_activity):
-        self.start_activities.append(start_activity)
+        self.start_activities.add(start_activity)
         start_place = f"start_{start_activity}"
         self.add_place(start_place)
         self.add_arc_place_transition(start_place, start_activity)
         
     def add_end_activity(self, end_activity):
-        self.end_activities.append(end_activity)
+        self.end_activities.add(end_activity)
         end_place = f"end_{end_activity}"
         self.add_place(end_place)
         self.add_arc_transition_place(end_activity, end_place)
-
     
     def add_place(self, place):
         self.places.add(place)

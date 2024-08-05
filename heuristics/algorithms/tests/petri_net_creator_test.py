@@ -8,7 +8,6 @@ from heuristics.datastructure.event import Event
 from heuristics.results.event_log import SerializableEventLog
 from heuristics.results.heuristics_net import HeuristicsResult
 from heuristics.results.petri_net import SerializablePetriNet
-from pm4py.objects.petri_net.utils import reduction
 
 petriNetCreator: PetriNetCreator = PetriNetCreator()
 
@@ -56,8 +55,6 @@ class PetriNetCreatorTest(unittest.TestCase):
 
         petri_net: SerializablePetriNet = petriNetCreator.create_petri_net(heuristics_result)
         pm4py_petrinet, pm4py_initial_marking, pmy4py_final_marking = petri_net.to_pm4py_petri_net()
-
-        pm4py_petrinet = reduction.apply_simple_reduction(pm4py_petrinet)
 
         pm4py.view_petri_net(pm4py_petrinet, pm4py_initial_marking, pmy4py_final_marking)
         event_log: SerializableEventLog = SerializableEventLog(

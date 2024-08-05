@@ -62,8 +62,8 @@ class HeuristicsNetCreator:
 
         return HeuristicsResult(
             all_activities=all_activities,
-            start_activities=directly_follows_graph.start_activities,
-            end_activities=directly_follows_graph.end_activities,
+            start_activities=list(directly_follows_graph.start_activities),
+            end_activities=list(directly_follows_graph.end_activities),
             relations=list(relevant_relations),
             concurrent_activities=concurrent_activities
         )

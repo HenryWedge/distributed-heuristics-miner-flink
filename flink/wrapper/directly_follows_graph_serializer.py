@@ -27,6 +27,8 @@ class DirectlyFollowsGraphSerDes:
     def deserialize(self, directly_follows_graph: str) -> DirectlyFollowsGraph:
         directly_follows_graph_dict = json.loads(directly_follows_graph)
         relation_dict = json.loads(directly_follows_graph_dict["relations"])
+        start_activities = json.loads(directly_follows_graph_dict["start_activities"])
+        end_activities = json.loads(directly_follows_graph_dict["end_activities"])
 
         unwrapped_relations: Dict[tuple[string, string], int] = dict()
         for relation_key in relation_dict:
@@ -35,6 +37,6 @@ class DirectlyFollowsGraphSerDes:
 
         return DirectlyFollowsGraph(
             counted_relations=unwrapped_relations,
-            start_activities=directly_follows_graph_dict["start_activities"],
-            end_activities=directly_follows_graph_dict["end_activities"]
+            start_activities=start_activities,
+            end_activities=end_activities
         )
