@@ -52,7 +52,7 @@ class PetriNetWrapper:
             split_transition = self.concurrent_transition_after_activity[predecessor]
         else:
             split_transition = f"split_{predecessor}"
-            self.net.add_transition(split_transition)
+            self.net.add_silent_transition(split_transition)
             self.net.add_arc_place_transition(split_place, split_transition)
 
         self.net.add_arc_transition_place(predecessor, split_place)
@@ -77,7 +77,7 @@ class PetriNetWrapper:
             join_transition = self.concurrent_transition_before_activity[predecessor]
         else:
             join_transition = f"join_{successor}"
-            self.net.add_transition(join_transition)
+            self.net.add_silent_transition(join_transition)
             self.net.add_arc_transition_place(join_transition, join_place)
 
         self.net.add_arc_place_transition(join_place, successor)

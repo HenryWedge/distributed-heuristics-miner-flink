@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: load-configmap
+data:
+  load.yaml: |
+    numberOfDataSources:
+      type: static
+      count: 2
+    caseId: increasing
+    eventLoop:
+      type: load
+      loadProfile:
+        type: gradual
+        tickCount: 50
+        minimalLoad: 20000
+        maximalLoad: 50000
+    dataSourceTopology:
+      dataSources:
+        - name: "Sensor 0"
+          sink:
+            type: kafkaValidation
+            bootstrapServer: "theodolite-kafka-kafka-bootstrap:9092"
+            topic: "input"
+            partition: 0
+            validationTopic: "validation"
+            validationSplit: 5
+          eventGeneration:
+            type: "classic"
+            selection: uniform
+            from:
+              events:
+                - duration:
+                    type: gaussian
+                    mu: 4
+                    sigma: 2
+                  transition:
+                    type: next_sensor
+                    index: 1
+                  activities:
+                    selection: uniform
+                    from:
+                      type: list
+                      values:
+                        - [ "Hugo", "Jonas" ]
+        - name: "Sensor 1"
+          sink:
+            type: kafkaValidation
+            bootstrapServer: "theodolite-kafka-kafka-bootstrap:9092"
+            topic: "input"
+            partition: 1
+            validationTopic: "validation"
+            validationSplit: 5
+          eventGeneration:
+            type: "classic"
+            selection: uniform
+            from:
+              events:
+                - duration:
+                    type: static
+                    duration: 1
+                  transition:
+                    type: next_sensor
+                    index: 1
+                  activities:
+                    selection: uniform
+                    from:
+                      type: list
+                      values:
+                        - [ "Manfred", "Thomas" ]
+                - duration:
+                    type: static
+                    duration: 1
+                  transition:
+                    type: next_sensor
+                    index: 2
+                  activities:
+                    selection: uniform
+                    from:
+                      type: list
+                      values:
+                        - [ "Hanna", "Hanno" ]

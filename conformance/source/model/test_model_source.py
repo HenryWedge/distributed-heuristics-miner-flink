@@ -1,26 +1,9 @@
 from conformance.source.model.model_source import ModelSource
 from heuristics.algorithms.petri_net_creator import PetriNetCreator
 from heuristics.results.heuristics_net import HeuristicsResult
+from heuristics.results.petri_net import create_empty_petri_net
 
 
 class TestModelSource(ModelSource):
     def get_petri_net(self):
-        result = HeuristicsResult(
-            all_activities=[
-                "a", "b"
-            ],
-            start_activities=[
-                "a"
-            ],
-            end_activities=[
-                "b"
-            ],
-            relations=[
-                ("a", "b"),
-            ],
-            concurrent_activities=[
-                #("a", ("b", "c"))
-            ]
-        )
-        creator = PetriNetCreator()
-        return creator.create_petri_net(result)
+        return create_empty_petri_net()

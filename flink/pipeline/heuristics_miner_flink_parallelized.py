@@ -38,8 +38,10 @@ class HeuristicsMinerFlinkParallelized:
                  heuristics_net_creator.process(directly_follows_graph), Types.STRING()) \
             .map(lambda heuristics_net:
                  petri_net_creator.process(heuristics_net), Types.STRING()) \
-            .key_by(lambda key: 0).count_window(3).reduce(reduce_function=PetriNetsMergerFlink(), output_type=Types.STRING())\
-            .print()
-            #.sink_to(sink)
+            .key_by(lambda key: 0) \
+            .count_window(2) \
+            .reduce(
+                reduce_function=PetriNetsMergerFlink(), output_type=Types.STRING())\
+            .sink_to(sink)
 
         env.execute()

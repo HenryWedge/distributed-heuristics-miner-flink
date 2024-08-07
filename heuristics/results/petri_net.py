@@ -3,10 +3,11 @@ from typing import List, Set
 
 from pm4py import PetriNet, Marking
 from pm4py.objects.petri_net.utils.petri_utils import add_arc_from_to
+from pm4py.objects.petri_net.utils import reduction
 
 
 def create_empty_petri_net():
-    return SerializablePetriNet(set(), set(), set(), set(), set(), set())
+    return SerializablePetriNet(set(), set(), set(), set(), set(), set(), set())
 
 
 class SerializablePetriNet:
@@ -15,13 +16,14 @@ class SerializablePetriNet:
             self,
             places,
             transitions,
+            silent_transitions,
             arc_place_transition,
             arc_transition_place,
             start_activities,
             end_activities):
         self.places: Set[string] = set(places)
         self.transitions: Set[string] = set(transitions)
-        self.silent_transitions: Set[string] = transitions
+        self.silent_transitions: Set[string] = set(silent_transitions)
         self.arc_place_transition: Set[tuple[string, string]] = set(arc_place_transition)
         self.arc_transition_place: Set[tuple[string, string]] = set(arc_transition_place)
         self.start_activities = set(start_activities)
@@ -75,6 +77,9 @@ class SerializablePetriNet:
         for transition in self.transitions:
             petri_net.transitions.add(PetriNet.Transition(transition, label=transition))
 
+        for transition in self.silent_transitions:
+            petri_net.transitions.add(PetriNet.Transition(transition, label=None))
+
         for arc in self.arc_place_transition:
             place = self._get_place(petri_net, name=arc[0])
             transition = self._get_transition(petri_net, name=arc[1])
@@ -93,4 +98,6 @@ class SerializablePetriNet:
             place = self._get_place(petri_net, f"end_{end_activity}")
             final_marking[place] = 1
 
-        return petri_net, initial_marking, final_marking
+
+        reduced_petrinet = reduction.apply_simple_reduction(petri_net)
+        return reduced_petrinet, initial_marking, final_marking

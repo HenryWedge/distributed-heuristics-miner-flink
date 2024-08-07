@@ -3,6 +3,7 @@ import json
 from kafka import KafkaConsumer
 
 from conformance.source.model.model_source import ModelSource
+from flink.wrapper.petri_net_serializer import PetriNetSerDes
 from heuristics.results.petri_net import SerializablePetriNet
 
 
@@ -22,14 +23,7 @@ class KafkaModelSource(ModelSource):
         for partition in result:
             consumed_records = result[partition]
             latest_record = consumed_records[-1]
-            petri_net_dict = json.loads(latest_record.value.decode())
-            petri_net = SerializablePetriNet(
-                places=petri_net_dict["places"],
-                transitions=petri_net_dict["transitions"],
-                arcs=petri_net_dict["arcs"],
-                start_activities=petri_net_dict["start_activities"],
-                end_activities=petri_net_dict["end_activities"]
-            )
+            petri_net = PetriNetSerDes().deserialize(latest_record.value.decode())
             self.last_petri_net = petri_net
             return petri_net
 

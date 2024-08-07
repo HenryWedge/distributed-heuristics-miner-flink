@@ -25,7 +25,7 @@ class FlinkPipelineBase:
             .set_bootstrap_servers(self.bootstrap_server) \
             .set_topics(self.input_topic) \
             .set_group_id(self.group) \
-            .set_starting_offsets(KafkaOffsetsInitializer.earliest()) \
+            .set_property("enable.auto.commit", "true")\
             .set_value_only_deserializer(SimpleStringSchema()) \
             .build()
 
@@ -44,5 +44,4 @@ class FlinkPipelineBase:
         env = StreamExecutionEnvironment.get_execution_environment()
         env.set_runtime_mode(RuntimeExecutionMode.STREAMING)
         env.add_jars(self.connect_jar_location)
-        env.set_parallelism(self.parallelism)
         return env

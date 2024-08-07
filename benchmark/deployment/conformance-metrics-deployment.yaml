@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conformance-metrics
+  labels:
+    app: conformance-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conformance-metrics
+  template:
+    metadata:
+      labels:
+        app: conformance-metrics
+    spec:
+      containers:
+        - name: conformance-metrics
+          image: hendrikreiter/conformance-metrics-server:0.0.1
+          imagePullPolicy: Always
+          ports:
+            - name: metric
+              containerPort: 5000
+              protocol: TCP
+          env:
+            - name: VALIDATION_TOPIC
+              value: validation
+            - name: MODEL_TOPIC
+              value: model
+            - name: BOOTSTRAP_SERVER
+              value: theodolite-kafka-kafka-bootstrap:9092

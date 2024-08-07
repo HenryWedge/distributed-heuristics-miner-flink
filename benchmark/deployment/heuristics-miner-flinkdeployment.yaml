@@ -1,0 +1,55 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: heuristics-miner-flink
+spec:
+  image: hendrikreiter/heuristics-miner-flink:0.0.2
+  imagePullPolicy: Always
+  flinkVersion: v1_17
+  flinkConfiguration:
+    taskmanager.numberOfTaskSlots: "1"
+  serviceAccount: flink
+  jobManager:
+    resource:
+      memory: "2048m"
+      cpu: 1
+    podTemplate:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: pod-template
+      spec:
+        serviceAccount: flink
+        containers:
+          - name: flink-main-container
+            env:
+              - name: bootstrap_server
+                value: theodolite-kafka-kafka-bootstrap:9092
+              - name: path_to_connect_jar
+                value: "/app"
+              - name: input_topic
+                value: input
+              - name: output_topic
+                value: model
+              - name: bucket_size
+                value: "20"
+              - name: parallelism
+                value: "1"
+              - name: and_threshold
+                value: "0.5"
+              - name: dependency_threshold
+                value: "0.5"
+              - name: group
+                value: my-group
+              - name: variant
+                value: "parallelized"
+  taskManager:
+    resource:
+      memory: "2048m"
+      cpu: 1
+  job:
+    jarURI: local:///opt/flink/opt/flink-python-1.17.2.jar
+    entryClass: "org.apache.flink.client.python.PythonDriver"
+    args: ["-pyclientexec", "/usr/bin/python3", "-py", "/app/flink_pipeline_main.py"]
+    parallelism: 1
+    upgradeMode: stateless

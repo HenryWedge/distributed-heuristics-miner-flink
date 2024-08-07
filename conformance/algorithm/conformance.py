@@ -1,10 +1,6 @@
-import json
+import random
 import string
-from threading import Thread
-
 import pm4py
-from pm4py.objects.log.obj import EventLog
-
 from heuristics.results.event_log import SerializableEventLog
 from heuristics.results.petri_net import SerializablePetriNet
 
@@ -18,6 +14,7 @@ class ConformanceMetrics:
         self.precision_alignments = 0.0
         self.model_source = model_source
         self.event_log_source = event_log_source
+        self.random = random.random()
 
     def get_precision(self, evaluation_function) -> float:
         try:
@@ -33,8 +30,7 @@ class ConformanceMetrics:
             print(error)
             return 0.0
 
-    def calculate_metrics(self) -> string:
-        result = dict()
+    def calculate_metrics(self):
         serializable_event_log: SerializableEventLog = self.event_log_source.get_event_log()
         model: SerializablePetriNet = self.model_source.get_petri_net()
 
@@ -50,10 +46,3 @@ class ConformanceMetrics:
                 lambda: pm4py.fitness_alignments(event_log, petri_net, initial_marking, final_marking))
             self.precision_alignments = self.get_precision(
                 lambda: pm4py.precision_alignments(event_log, petri_net, initial_marking, final_marking))
-
-            result["precision_token_based_replay"] = self.precision_token_based_replay
-            result["fitness_token_based_replay"] = self.fitness_token_based_replay
-            result["precision_alignments"] = self.precision_alignments
-            result["fitness_alignments"] = self.fitness_alignments
-
-        return json.dumps(result)

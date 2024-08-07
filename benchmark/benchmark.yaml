@@ -1,0 +1,41 @@
+apiVersion: theodolite.rocks/v1beta1
+kind: benchmark
+metadata:
+  name: ml-benchmark
+spec:
+  sut:
+    resources:
+      - configMap:
+         name: "ahmad-cm"
+         files:
+           - sut.yaml
+           - sut-svc.yaml
+  loadGenerator:
+    resources:
+      - configMap:
+         name: "ahmad-cm"
+         files:
+            - deploy.yaml
+  resourceTypes:
+    - typeName: "Instances"
+      patchers:
+        - type: "ReplicaPatcher"
+          resource: "sut.yaml"
+  loadTypes:
+    - typeName: "UsersPerSecond"
+      patchers:
+        - type: "EnvVarPatcher"
+          resource: "deploy.yaml"
+          properties:
+            variableName: "ML_THREADS"
+            container: "load"
+  slos:
+    - name: "cpu usage"
+      sloType: "generic"
+      prometheusUrl: "http://prometheus-operated:9090"
+      offset: 0
+      properties:
+        promQLQuery: "process_cpu_usage{container=\"system\"}"
+        threshold: 0.8
+        externalSloUrl: "http://localhost:8082"
+        warmup: 15

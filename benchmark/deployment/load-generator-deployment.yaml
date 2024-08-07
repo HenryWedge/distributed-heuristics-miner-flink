@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-generator
+  labels:
+    app: load-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-generator
+  template:
+    metadata:
+      labels:
+        app: load-generator
+    spec:
+      containers:
+        - name: load-generator
+          image: hendrikreiter/distributed-event-factory
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: load-config
+              mountPath: /app/config
+          env:
+            - name: CONFIG_FILE
+              value: config/load.yaml
+      volumes:
+        - name: load-config
+          configMap:
+            name: load-configmap
+            items:
+              - key: load.yaml
+                path: load.yaml

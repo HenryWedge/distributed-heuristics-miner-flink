@@ -8,7 +8,7 @@ from conformance.source.event_log.event_log_source import EventLogSource
 
 class TestEventLogSource(EventLogSource):
 
-    def build_event_log_from_datastream(self):
+    def get_event_log(self):
         event_log = dict()
         events: List[string] = [
             "a", "b", "c"

@@ -1,0 +1,9 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: model
+  labels:
+    strimzi.io/cluster: theodolite-kafka
+spec:
+  partitions: 5
+  replicas: 1

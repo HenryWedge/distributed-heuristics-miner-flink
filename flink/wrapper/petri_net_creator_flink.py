@@ -1,6 +1,6 @@
 import json
 
-from flink.wrapper.petri_net_serializer import PetriNetSerializer
+from flink.wrapper.petri_net_serializer import PetriNetSerDes
 from heuristics.algorithms.petri_net_creator import PetriNetCreator
 from heuristics.results.heuristics_net import HeuristicsResult
 
@@ -20,4 +20,4 @@ class PetriNetCreatorFlink:
             concurrent_activities=heuristics_result_dict["concurrent_activities"],
         )
         petri_net = self.petri_net_creator.create_petri_net(heuristics_result)
-        return PetriNetSerializer().serialize(petri_net)
+        return PetriNetSerDes().serialize(petri_net)
